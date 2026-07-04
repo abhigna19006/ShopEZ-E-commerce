@@ -25,6 +25,15 @@ exports.createOrder = async (req, res) => {
   }
 };
 
+exports.getOrders = async (req, res) => {
+  try {
+    const Order = require("../models/order");
+    const orders = await Order.find().populate("user");
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 exports.getUserOrders = async (req, res) => {
   try {

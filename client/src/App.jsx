@@ -9,6 +9,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 
 function App() {
@@ -34,6 +36,10 @@ function App() {
         <Route path="/cart" element={<Cart />} />
 
         <Route path="/orders" element={<Orders />} />
+
+        <Route path="/admin-login" element={<AdminLogin />} />
+
+        <Route path="/admin-dashboard" element={<AdminDashboard />} /> 
 
       </Routes>
 

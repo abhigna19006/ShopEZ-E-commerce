@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
-import { 
-  FaHome, 
-  FaBox, 
-  FaShoppingCart, 
-  FaClipboardList, 
-  FaSignInAlt, 
-  FaUserPlus, 
-  FaSignOutAlt 
+import {
+  FaHome,
+  FaBox,
+  FaShoppingCart,
+  FaClipboardList,
+  FaSignInAlt,
+  FaUserPlus,
+  FaSignOutAlt,
+  FaUserShield
 } from "react-icons/fa";
 
 function Navbar() {
@@ -127,7 +128,7 @@ function Navbar() {
                 cursor:"pointer"
               }}
             >
-            <FaSignOutAlt/> LoginLogout
+            <FaSignOutAlt/> Logout
             </button>
 
           </>
@@ -149,6 +150,18 @@ function Navbar() {
               style={{color:"white", textDecoration:"none"}}
             >
             <FaUserPlus/>  Register
+            </Link>
+
+
+            <Link
+              to="/admin-login"
+              style={{ color: "white", textDecoration: "none" }}
+            >
+            <FaUserShield /> Admin
+            </Link>
+
+            <Link to="/admin" style={{ color: "white", textDecoration: "none" }}>
+            Admin Dashboard
             </Link>
 
           </>
