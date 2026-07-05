@@ -1,54 +1,52 @@
-const Order = require("../models/order");
+const Order = require("../models/Order");
 
+// PLACE ORDER
 exports.createOrder = async (req, res) => {
   try {
+    const { userId, products, total } = req.body;
 
-    const { user, products, totalAmount } = req.body;
-
-    const order = await Order.create({
-      user,
+    const newOrder = new Order({
+      userId,
       products,
-      totalAmount
+      total,
+      status: "Pending",
     });
 
-    res.status(201).json({
-      message: "Order created successfully",
-      order
+    await newOrder.save();
+
+    res.json({
+      message: "Order placed successfully",
+      order: newOrder,
     });
-
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    });
-
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
   }
 };
 
+// GET ALL ORDERS
 exports.getOrders = async (req, res) => {
   try {
-    const Order = require("../models/order");
-    const orders = await Order.find().populate("user");
+    const orders = await Order.find().sort({ createdAt: -1 });
     res.json(orders);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
   }
 };
 
+// GET USER ORDERS
 exports.getUserOrders = async (req, res) => {
   try {
+    const userId = req.params.userId;
 
-    const orders = await Order.find({
-      user: req.params.userId
-    }).populate("products.product");
-
-    res.json(orders);
-
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message
+    const orders = await Order.find({ userId }).sort({
+      createdAt: -1,
     });
 
+    res.json(orders);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
   }
 };

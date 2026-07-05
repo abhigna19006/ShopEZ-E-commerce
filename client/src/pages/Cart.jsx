@@ -1,226 +1,159 @@
-import { useEffect, useState } from "react";
-import API from "../api/axios";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-function Cart() {
+const Cart = () => {
+  const [cart, setCart] = useState([]);
 
-  const [cartItems, setCartItems] = useState([]);
+  // ✅ FIX: user must be defined
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
-    getCart();
+    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(storedCart);
   }, []);
 
+  const updateCart = (updatedCart) => {
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
 
-  const getCart = async () => {
+  const increaseQty = (index) => {
+    const updated = [...cart];
+    updated[index].qty = (updated[index].qty || 1) + 1;
+    updateCart(updated);
+  };
+
+  const decreaseQty = (index) => {
+    const updated = [...cart];
+    updated[index].qty = (updated[index].qty || 1) - 1;
+
+    if (updated[index].qty <= 1) updated[index].qty = 1;
+
+    updateCart(updated);
+  };
+
+  const removeItem = (index) => {
+    const updated = cart.filter((_, i) => i !== index);
+    updateCart(updated);
+  };
+
+  // ✅ FIX: safe total calculation
+  const total = cart.reduce((sum, item) => {
+    return sum + Number(item.price || 0) * (item.qty || 1);
+  }, 0);
+
+  // ✅ FIX: working place order
+  const placeOrder = async () => {
     try {
+      const orderData = {
+        userId: user?._id,
+        products: cart.map(item => ({
+          name: item.name,
+          price: Number(item.price || 0),
+          qty: item.qty || 1,
+          image: item.image
+        })),
+        total: total
+      };
 
-      const user = JSON.parse(localStorage.getItem("user"));
+      console.log("ORDER DATA SENT:", orderData);
 
-      const response = await API.get(`/cart/${user._id}`);
-
-      setCartItems(
-        response.data.items.filter(item => item.product)
+      const res = await axios.post(
+        "http://localhost:5000/api/orders/create",
+        orderData
       );
 
-    } catch (error) {
-      console.log(error);
+      console.log("ORDER RESPONSE:", res.data);
+
+      alert("Order Placed Successfully 🎉");
+
+      localStorage.removeItem("cart");
+      setCart([]);
+
+    } catch (err) {
+      console.log("ORDER ERROR:", err);
+      alert("Order Failed ❌ Check console");
     }
   };
-
-
-  // Increase quantity
-  const increaseQuantity = (index) => {
-
-    const updatedCart = [...cartItems];
-
-    updatedCart[index].quantity += 1;
-
-    setCartItems(updatedCart);
-  };
-
-
-  // Decrease quantity
-  const decreaseQuantity = (index) => {
-
-    const updatedCart = [...cartItems];
-
-    if (updatedCart[index].quantity > 1) {
-      updatedCart[index].quantity -= 1;
-    }
-
-    setCartItems(updatedCart);
-  };
-
-
-  // Remove item
-  const removeItem = (index) => {
-
-    const updatedCart = cartItems.filter(
-      (_, i) => i !== index
-    );
-
-    setCartItems(updatedCart);
-
-  };
-
-
-  const total = cartItems.reduce(
-    (sum, item) =>
-      sum + item.product.price * item.quantity,
-    0
-  );
-
-
-  const placeOrder = async () => {
-
-    try {
-
-      const user = JSON.parse(localStorage.getItem("user"));
-
-      const products = cartItems.map(item => ({
-        product: item.product._id,
-        quantity: item.quantity
-      }));
-
-
-      await API.post("/orders", {
-        user: user._id,
-        products,
-        totalAmount: total
-      });
-
-
-      alert("Order created successfully");
-
-
-    } catch(error) {
-
-      console.log(error);
-      alert("Order failed");
-
-    }
-
-  };
-
 
   return (
+    <div style={{ padding: "20px" }}>
 
-    <div
-      style={{
-        padding:"30px",
-        background:"#f5f5f5",
-        minHeight:"100vh"
-      }}
-    >
+      <h2 style={{ textAlign: "center" }}>🛒 Your Cart</h2>
 
-      <h1>Your Cart 🛒</h1>
+      {cart.length === 0 ? (
+        <h3 style={{ textAlign: "center" }}>Cart is empty</h3>
+      ) : (
+        <>
+          {cart.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                border: "1px solid #ccc",
+                margin: "10px",
+                padding: "10px",
+                textAlign: "center"
+              }}
+            >
 
+              <img
+                src={item.image}
+                alt={item.name}
+                style={{ width: "100px" }}
+              />
 
-      {
-        cartItems.length === 0 ?
+              <h3>{item.name}</h3>
 
-        <h3>Cart is empty</h3>
+              <p style={{ color: "gray" }}>
+                {item.description}
+              </p>
 
-        :
+              <p>₹ {item.price}</p>
 
-        cartItems.map((item,index)=>(
+              <div style={{ marginTop: "10px" }}>
+                <button onClick={() => decreaseQty(index)}>➖</button>
+                <span style={{ margin: "0 10px" }}>
+                  {item.qty || 1}
+                </span>
+                <button onClick={() => increaseQty(index)}>➕</button>
 
-          <div
-            key={item.product._id}
-            style={{
-              background:"white",
-              padding:"20px",
-              margin:"20px 0",
-              borderRadius:"15px",
-              boxShadow:"0 3px 10px #ccc"
-            }}
-          >
-
-            <h2>
-              {item.product.name}
-            </h2>
-
-
-            <p>
-              {item.product.description}
-            </p>
-
-
-            <h3>
-              ₹{item.product.price}
-            </h3>
-
-
-            <div>
-
-              <button
-                onClick={() => decreaseQuantity(index)}
-              >
-                -
-              </button>
-
-
-              <span
-                style={{
-                  margin:"0 15px",
-                  fontSize:"20px"
-                }}
-              >
-                {item.quantity}
-              </span>
-
-
-              <button
-                onClick={() => increaseQuantity(index)}
-              >
-                +
-              </button>
-
-
-              <button
-                onClick={() => removeItem(index)}
-                style={{
-                  marginLeft:"20px",
-                  background:"red",
-                  color:"white"
-                }}
-              >
-                Remove
-              </button>
-
+                <button
+                  onClick={() => removeItem(index)}
+                  style={{
+                    marginLeft: "10px",
+                    background: "red",
+                    color: "white"
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
 
             </div>
+          ))}
 
+          {/* TOTAL SECTION */}
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <h2>Total: ₹ {total}</h2>
 
+            <button
+              onClick={placeOrder}
+              style={{
+                padding: "10px 20px",
+                background: "green",
+                color: "white",
+                border: "none",
+                borderRadius: "5px"
+              }}
+            >
+              Place Order
+            </button>
           </div>
-
-        ))
-      }
-
-
-      <h2>
-        Total Amount: ₹{total}
-      </h2>
-
-
-      <button
-        onClick={placeOrder}
-        style={{
-          background:"#1e3a8a",
-          color:"white",
-          padding:"12px 25px",
-          border:"none",
-          borderRadius:"8px",
-          fontSize:"16px"
-        }}
-      >
-        Place Order
-      </button>
-
+        </>
+      )}
 
     </div>
-
   );
-
-}
+};
 
 export default Cart;

@@ -1,117 +1,96 @@
-import { useState } from "react";
-import API from "../api/axios";
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function Register() {
+const Register = () => {
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleRegister = async () => {
     try {
-
-      const response = await API.post("/users/register", {
+      const res = await axios.post("http://localhost:5000/api/users/register", {
         name,
         email,
         password
       });
 
-      alert("Register successful");
+      alert("Registered Successfully 🎉");
+      navigate("/login");
 
-      console.log(response.data);
-
-    } catch (error) {
-
-      console.log(error);
-
-      alert(error.response.data.message);
-
+    } catch (err) {
+      console.log(err);
+      alert("Registration Failed");
     }
   };
 
-
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        marginTop: "40px"
-      }}
-    >
+    <div style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      backgroundColor: "white"
+    }}>
 
-      <div
-        style={{
-          width: "350px",
-          padding: "25px",
-          borderRadius: "10px",
-          boxShadow: "0 2px 10px gray"
-        }}
-      >
+      <div style={{
+        border: "2px solid black",
+        padding: "30px",
+        borderRadius: "10px",
+        width: "300px",
+        backgroundColor: "white"
+      }}>
 
-        <h2 style={{ textAlign: "center" }}>
-          Create Account
-        </h2>
+        <h2 style={{ textAlign: "center" }}>Register</h2>
 
+        <form onSubmit={handleSubmit}>
 
-        <input
-          type="text"
-          placeholder="Enter Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "15px"
-          }}
-        />
+          <input
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={{ width: "100%", margin: "5px", padding: "8px" }}
+          />
 
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ width: "100%", margin: "5px", padding: "8px" }}
+          />
 
-        <input
-          type="email"
-          placeholder="Enter Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "15px"
-          }}
-        />
+          <input
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: "100%", margin: "5px", padding: "8px" }}
+          />
 
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: "10px",
+              marginTop: "10px",
+              backgroundColor: "#0a3d91",
+              color: "white",
+              border: "none"
+            }}
+          >
+            Register
+          </button>
 
-        <input
-          type="password"
-          placeholder="Enter Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "15px"
-          }}
-        />
-
-
-        <button
-          onClick={handleRegister}
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "#1e3a8a",
-            color: "white",
-            border: "none",
-            borderRadius: "5px"
-          }}
-        >
-          Register
-        </button>
-
+        </form>
 
       </div>
 
     </div>
   );
-}
+};
 
 export default Register;

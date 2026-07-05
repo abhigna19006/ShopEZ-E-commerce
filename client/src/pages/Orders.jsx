@@ -1,87 +1,63 @@
-import { useEffect, useState } from "react";
-import API from "../api/axios";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-function Orders() {
-
+const Orders = () => {
   const [orders, setOrders] = useState([]);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
-    getOrders();
+    const fetchOrders = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/orders/user/${user._id}`
+        );
+
+        console.log("ORDERS RESPONSE:", res.data);
+        setOrders(res.data);
+      } catch (err) {
+        console.log("ORDER FETCH ERROR:", err);
+      }
+    };
+
+    if (user?._id) {
+      fetchOrders();
+    }
   }, []);
 
-
-  const getOrders = async () => {
-    try {
-
-      const user = JSON.parse(localStorage.getItem("user"));
-
-      const response = await API.get(`/orders/${user._id}`);
-
-      setOrders(response.data);
-
-    } catch (error) {
-
-      console.log(error);
-
-    }
-  };
-
-
   return (
-    <div style={{ padding: "30px" }}>
-
-      <h2>Your Orders</h2>
-
+    <div style={{ padding: "20px", textAlign: "center" }}>
+      <h2>📦 Your Orders</h2>
 
       {orders.length === 0 ? (
-
-        <p>No orders found</p>
-
+        <h3>No orders found</h3>
       ) : (
-
-        orders.map((order) => (
-
+        orders.map((order, index) => (
           <div
-            key={order._id}
+            key={index}
             style={{
-              width: "350px",
-              padding: "20px",
-              marginBottom: "20px",
-              borderRadius: "10px",
-              boxShadow: "0 2px 10px gray"
+              border: "1px solid #ccc",
+              margin: "10px",
+              padding: "10px",
             }}
           >
+            <h4>Order ID: {order._id}</h4>
+            <p>Total: ₹{order.total}</p>
+            <p>Status: {order.status}</p>
 
-            <h3>
-              Order ID
-            </h3>
-
-            <p>
-              {order._id}
-            </p>
-
-
-            <h4>
-              Total Amount: ₹{order.totalAmount}
-            </h4>
-
-
-            <p>
-              Status:
-              <b style={{ color: "green" }}>
-                {" "}{order.status || "Pending"}
-              </b>
-            </p>
-
-
+            <h5>Products:</h5>
+            {order.products.map((p, i) => (
+              <div key={i}>
+                <p>
+                  {p.name} - ₹{p.price} x {p.qty}
+                </p>
+              </div>
+            ))}
           </div>
-
         ))
-
       )}
-
     </div>
   );
-}
+};
 
 export default Orders;

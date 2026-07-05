@@ -3,16 +3,11 @@ const router = express.Router();
 
 const {
   createProduct,
-  getProducts,
-  updateProduct
+  getProducts
 } = require("../controllers/productController");
 
 
-router.post("/", createProduct);
-
 router.get("/", getProducts);
-
-router.put("/:id", updateProduct);
-
+router.post("/", createProduct);
 
 module.exports = router;

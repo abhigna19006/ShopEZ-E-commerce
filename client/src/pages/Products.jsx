@@ -1,146 +1,109 @@
-import { useEffect, useState } from "react";
-import API from "../api/axios";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-function Products() {
-
+const Products = () => {
   const [products, setProducts] = useState([]);
 
-
   useEffect(() => {
-    getProducts();
+    axios.get("http://localhost:5000/api/products")
+      .then(res => {
+        console.log("PRODUCTS:", res.data);
+        setProducts(res.data);
+      })
+      .catch(err => console.log("ERROR:", err));
   }, []);
 
-
-  const getProducts = async () => {
-
-    try {
-
-      const response = await API.get("/products");
-
-      setProducts(response.data);
-
-    } catch (error) {
-
-      console.log(error);
-
-    }
-
+  const addToCart = (product) => {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cart.push(product);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Added to Cart 🛒");
   };
-
-
-  const addToCart = async (productId) => {
-
-    try {
-
-      const user = JSON.parse(localStorage.getItem("user"));
-
-      await API.post("/cart", {
-        user: user._id,
-        product: productId,
-        quantity: 1
-      });
-
-
-      alert("Item added to cart");
-
-    } catch (error) {
-
-      console.log(error);
-      alert("Please login first");
-
-    }
-
-  };
-
 
   return (
+    <div style={{ padding: "20px", backgroundColor: "#f5f7ff" }}>
 
-    <div style={{ padding: "30px" }}>
+      <h2 style={{ textAlign: "center", color: "#1e3a8a" }}>
+        Products
+      </h2>
 
-      <h1 style={{ textAlign:"center", color:"#1e3a8a" }}>
-        ShopEZ Products 🛒
-      </h1>
+      {/* PRODUCTS GRID */}
+      <div style={{
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        gap: "20px"
+      }}>
 
-
-      <div
-        style={{
-          display:"flex",
-          flexWrap:"wrap",
-          gap:"25px",
-          justifyContent:"center"
-        }}
-      >
-
-        {products.map((product) => (
-
-          <div
-            key={product._id}
-            style={{
-              width:"280px",
-              padding:"20px",
-              borderRadius:"12px",
-              boxShadow:"0 2px 10px gray",
-              backgroundColor:"white"
-            }}
-          >
-
-            <img
-              src={product.image}
-              alt={product.name}
+        {products.length === 0 ? (
+          <p>No products found</p>
+        ) : (
+          products.map((p) => (
+            <div
+              key={p._id}
               style={{
-                width:"100%",
-                height:"200px",
-                objectFit:"cover",
-                borderRadius:"10px"
-              }}
-            />
-
-
-            <h2>
-              {product.name}
-            </h2>
-
-
-            <p>
-              {product.description}
-            </p>
-
-
-            <p>
-              Category: {product.category}
-            </p>
-
-
-            <h3>
-              ₹{product.price}
-            </h3>
-
-
-            <button
-              onClick={() => addToCart(product._id)}
-              style={{
-                backgroundColor:"#1e3a8a",
-                color:"white",
-                padding:"10px 20px",
-                border:"none",
-                borderRadius:"5px",
-                cursor:"pointer"
+                width: "230px",
+                backgroundColor: "white",
+                borderRadius: "10px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                overflow: "hidden"
               }}
             >
-              Add to Cart
-            </button>
 
+              {/* IMAGE FIX */}
+              <img
+                src={p.image}
+                alt={p.name}
+                style={{
+                  width: "100%",
+                  height: "160px",
+                  objectFit: "cover"
+                }}
+                onError={(e) => {
+                  e.target.src = "https://via.placeholder.com/230x160";
+                }}
+              />
 
-          </div>
+              <div style={{ padding: "10px" }}>
 
-        ))}
+                <h3>{p.name}</h3>
+
+                <p style={{ fontSize: "13px", color: "gray" }}>
+                  {p.description}
+                </p>
+
+                <p style={{ fontWeight: "bold", color: "green" }}>
+                  ₹ {p.price}
+                </p>
+
+                <p style={{ fontSize: "12px", color: "blue" }}>
+                  Category: {p.category}
+                </p>
+
+                {/* ADD TO CART BUTTON */}
+                <button
+                  onClick={() => addToCart(p)}
+                  style={{
+                    width: "100%",
+                    padding: "8px",
+                    backgroundColor: "#1e3a8a",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer"
+                  }}
+                >
+                  🛒 Add to Cart
+                </button>
+
+              </div>
+            </div>
+          ))
+        )}
 
       </div>
-
     </div>
-
   );
-
-}
+};
 
 export default Products;

@@ -1,59 +1,37 @@
-const Product = require("../models/product");
+const Product = require("../models/Product");
 
-
-// Create Product
+// CREATE PRODUCT
 exports.createProduct = async (req, res) => {
   try {
-
     const product = await Product.create(req.body);
-
     res.status(201).json(product);
-
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    });
-
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-
-// Get All Products
+// GET PRODUCTS
 exports.getProducts = async (req, res) => {
   try {
-
+    console.log("DB CALL HIT"); 
     const products = await Product.find();
-
+    console.log(products); 
     res.json(products);
-
   } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    });
-
+    res.status(500).json({ message: error.message });
   }
 };
 
-
-// Update Product (for image)
+// UPDATE PRODUCT
 exports.updateProduct = async (req, res) => {
   try {
-
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
     );
-
     res.json(product);
-
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    });
-
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

@@ -1,110 +1,102 @@
-import { useState } from "react";
-import API from "../api/axios";
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function Login() {
+const Login = () => {
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-  const handleLogin = async () => {
     try {
-
-      const response = await API.post("/users/login", {
+      const res = await axios.post("http://localhost:5000/api/users/login", {
         email,
         password
       });
 
-      localStorage.setItem("token", response.data.token);
+      const user = res.data.user;
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(response.data.user)
-      );
+      // SAVE USER
+      localStorage.setItem("user", JSON.stringify(user));
 
-      alert("Login successful");
+      // SAVE TOKEN (if backend sends)
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
 
-      console.log(response.data);
+      // ADMIN CHECK
+      if (user.role === "admin") {
+        localStorage.setItem("admin", JSON.stringify(user));
+      }
 
-    } catch (error) {
+      alert("Login Successful 🎉");
 
-      console.log(error);
+      navigate("/");
 
-      alert(error.response.data.message);
-
+    } catch (err) {
+      console.log(err);
+      alert("Invalid Credentials ❌");
     }
   };
 
-
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        marginTop: "40px"
-      }}
-    >
+  <div style={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    backgroundColor: "white"   // ✅ FIXED (NO BLUE)
+  }}>
 
-      <div
-        style={{
-          width: "350px",
-          padding: "25px",
-          borderRadius: "10px",
-          boxShadow: "0 2px 10px gray"
-        }}
-      >
+    <div style={{
+      backgroundColor: "#f5f5f5",
+      padding: "30px",
+      borderRadius: "10px",
+      width: "300px"
+    }}>
 
-        <h2 style={{ textAlign: "center" }}>
-          Login
-        </h2>
+        <h2 style={{ textAlign: "center" }}>Login</h2>
 
+        <form onSubmit={handleLogin}>
 
-        <input
-          type="email"
-          placeholder="Enter Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "15px"
-          }}
-        />
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ width: "100%", padding: "8px", margin: "5px" }}
+          />
 
+          <input
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: "100%", padding: "8px", margin: "5px" }}
+          />
 
-        <input
-          type="password"
-          placeholder="Enter Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "15px"
-          }}
-        />
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: "10px",
+              marginTop: "10px",
+              backgroundColor: "#0a3d91",
+              color: "white",
+              border: "none"
+            }}
+          >
+            Login
+          </button>
 
-
-        <button
-          onClick={handleLogin}
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "#1e3a8a",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer"
-          }}
-        >
-          Login
-        </button>
-
+        </form>
 
       </div>
 
     </div>
   );
-}
+};
 
 export default Login;
