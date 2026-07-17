@@ -1,20 +1,29 @@
 const express = require("express");
 const router = express.Router();
+console.log("PUT ROUTE REGISTERED");
 
-// IMPORTANT: must be destructured correctly
 const {
   createOrder,
   getOrders,
-  getUserOrders
+  getUserOrders,
+  updateOrderStatus
 } = require("../controllers/orderController");
 
-// ✅ CORRECT (NO parentheses ())
-router.post("/create", createOrder);
 
-// GET ALL ORDERS
+// Place order
+router.post("/", createOrder);
+
+
+// Get all orders (Admin)
 router.get("/", getOrders);
 
-// USER ORDERS
+
+// Get user orders
 router.get("/user/:userId", getUserOrders);
+
+
+// Update order status (Admin)
+router.put("/:id", updateOrderStatus);
+
 
 module.exports = router;

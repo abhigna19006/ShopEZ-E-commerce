@@ -50,3 +50,24 @@ exports.getUserOrders = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+// UPDATE ORDER STATUS
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    res.json({
+      message: "Order status updated successfully",
+      order,
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  }
+};
