@@ -3,6 +3,10 @@
 ## Overview
 ShopEZ is a MERN-stack e-commerce web application designed to provide a simple, secure, and user-friendly online shopping experience. It combines React for the frontend, Node.js + Express for the backend, and MongoDB for database storage.
 
+## Demo Video
+Demo video link:
+https://drive.google.com/file/d/11GksOdpNWi-LMXOfatzBb1PI_hpgj3e7/view?usp=sharing
+
 ## Project Scope
 The documentation folder contains a complete phase-wise record of the ShopEZ project, including:
 - Ideation & brainstorming
