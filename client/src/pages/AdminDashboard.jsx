@@ -14,6 +14,8 @@ export default function AdminDashboard() {
   const [image, setImage] = useState("");
 
   const [editId, setEditId] = useState(null);
+  const [search, setSearch] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All");
 
 
   useEffect(() => {
@@ -210,8 +212,56 @@ const updateOrderStatus = async (id, status) => {
       <button onClick={addProduct}>
         {editId ? "Update Product" : "Add Product"}
       </button>
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "20px",
+    margin: "20px 0",
+  }}
+>
+  <div
+    style={{
+      flex: 1,
+      background: "#2196F3",
+      color: "white",
+      padding: "20px",
+      borderRadius: "10px",
+      textAlign: "center",
+    }}
+  >
+    <h3>👤 Users</h3>
+    <h2>{users.length}</h2>
+  </div>
 
+  <div
+    style={{
+      flex: 1,
+      background: "#4CAF50",
+      color: "white",
+      padding: "20px",
+      borderRadius: "10px",
+      textAlign: "center",
+    }}
+  >
+    <h3>📦 Orders</h3>
+    <h2>{orders.length}</h2>
+  </div>
 
+  <div
+    style={{
+      flex: 1,
+      background: "#FF9800",
+      color: "white",
+      padding: "20px",
+      borderRadius: "10px",
+      textAlign: "center",
+    }}
+  >
+    <h3>🛍 Products</h3>
+    <h2>{products.length}</h2>
+  </div>
+  </div>
       <hr />
       <h3>Users</h3>
 
@@ -257,14 +307,41 @@ const updateOrderStatus = async (id, status) => {
       </p>
 
       <hr />
-
-    </div>
+     </div>
   ))
 )}
 
-
       <h3>Products</h3>
 
+      <input
+      type="text"
+      placeholder="Search Product..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      style={{
+      padding: "8px",
+      width: "300px",
+      marginBottom: "15px",
+      }}
+    />
+
+    <br /><br />
+
+<select
+  value={filterCategory}
+  onChange={(e) => setFilterCategory(e.target.value)}
+  style={{
+    padding: "8px",
+    width: "200px",
+    marginBottom: "15px",
+  }}
+>
+  <option value="All">All Categories</option>
+  <option value="Electronics">Electronics</option>
+  <option value="Personal Care">Personal Care</option>
+  <option value="Stationery">Stationery</option>
+  <option value="Fashion">Fashion</option>
+</select>
 
       {products.length === 0 ? (
         <p>No products found.</p>
@@ -293,7 +370,16 @@ const updateOrderStatus = async (id, status) => {
 
           <tbody>
 
-            {products.map((product) => (
+            {products
+  .filter((product) =>
+    product.name.toLowerCase().includes(search.toLowerCase())
+  )
+  .filter((product) =>
+    filterCategory === "All"
+      ? true
+      : product.category === filterCategory
+  )
+  .map((product) => (
 
               <tr key={product._id}>
 

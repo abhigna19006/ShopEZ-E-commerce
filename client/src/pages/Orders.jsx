@@ -4,25 +4,33 @@ import axios from "axios";
 const Orders = () => {
   const [orders, setOrders] = useState([]);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        const userId = user?._id || user?.id;
+
+        console.log("USER ID:", userId);
+
         const res = await axios.get(
-          `http://localhost:5000/api/orders/user/${user._id}`
+          `http://localhost:5000/api/orders/user/${userId}`
         );
 
         console.log("ORDERS RESPONSE:", res.data);
+
         setOrders(res.data);
+
       } catch (err) {
         console.log("ORDER FETCH ERROR:", err);
       }
     };
 
-    if (user?._id) {
+    if (user) {
       fetchOrders();
     }
+
   }, []);
 
   return (
@@ -46,6 +54,7 @@ const Orders = () => {
             <p>Status: {order.status}</p>
 
             <h5>Products:</h5>
+
             {order.products.map((p, i) => (
               <div key={i}>
                 <p>
@@ -53,6 +62,7 @@ const Orders = () => {
                 </p>
               </div>
             ))}
+
           </div>
         ))
       )}

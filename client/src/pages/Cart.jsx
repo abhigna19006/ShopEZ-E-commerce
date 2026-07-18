@@ -5,7 +5,8 @@ const Cart = () => {
   const [cart, setCart] = useState([]);
 
   // ✅ FIX: user must be defined
-  const user = JSON.parse(localStorage.getItem("user"));
+  const storedUser = localStorage.getItem("user");
+const user = storedUser ? JSON.parse(storedUser) : null;
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -46,7 +47,7 @@ const Cart = () => {
   const placeOrder = async () => {
     try {
       const orderData = {
-        userId: user?._id,
+        userId: user?._id || user?.id,
         products: cart.map(item => ({
           name: item.name,
           price: Number(item.price || 0),
@@ -59,7 +60,7 @@ const Cart = () => {
       console.log("ORDER DATA SENT:", orderData);
 
       const res = await axios.post(
-        "http://localhost:5000/api/orders/create",
+        "http://localhost:5000/api/orders",
         orderData
       );
 

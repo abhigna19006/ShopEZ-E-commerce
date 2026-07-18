@@ -12,6 +12,7 @@ import Orders from "./pages/Orders";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProducts from "./pages/AdminProducts";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 
 function App() {
@@ -40,7 +41,7 @@ function App() {
 
         <Route path="/admin-login" element={<AdminLogin />} />
 
-        <Route path="/admin-dashboard" element={<AdminDashboard />} /> 
+        <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard/></ProtectedRoute>} />
 
         <Route path="/admin-products" element={<AdminProducts />} />
 

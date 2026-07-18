@@ -16,8 +16,13 @@ function Login() {
         password
       });
 
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      if (res.data.user.role !== "admin") {
+  alert("Access denied. Admin only.");
+  return;
+}
+      
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
       alert("Login successful");
 
