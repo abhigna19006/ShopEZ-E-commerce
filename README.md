@@ -5,7 +5,7 @@ ShopEZ is a MERN-stack e-commerce web application designed to provide a simple, 
 
 ## Demo Video
 Demo video link:
-https://drive.google.com/file/d/11GksOdpNWi-LMXOfatzBb1PI_hpgj3e7/view?usp=sharing
+https://drive.google.com/file/d/1Ws_qQoU0-YAggfGHOlbErst7NM6oaBRJ/view?usp=sharing
 
 ## Project Scope
 The documentation folder contains a complete phase-wise record of the ShopEZ project, including:
